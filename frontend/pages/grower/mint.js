@@ -3,6 +3,7 @@ import { ethers } from "ethers";
 import axios from "axios";
 import React from "react";
 import { Button } from "../../components/atoms/button";
+import { WEB3STORAGE_TOKEN, getABI} from "../../utils/utils"
 
 import { FileDrag } from "../../components/organisms/fileDrag";
 import { InputFile } from "../../components/atoms/inputFile";
@@ -10,6 +11,7 @@ import { InputFile } from "../../components/atoms/inputFile";
 const CONTRACT_ADDRESS = "0x7b261ee52c98d2d68cb832ae3d8e59867255f6eb";
 
 const UploadNFT = () => {
+
   const [abi, setAbi] = React.useState([]);
 
   const [imageFile, setImageFile] = React.useState();
@@ -23,7 +25,7 @@ const UploadNFT = () => {
     (async () => {
       // リロード時にアカウント取得（接続済のみ）
       const acts = await ethereum.request({ method: "eth_accounts" });
-      const _abi = await getAbi();
+      const _abi = await getABI();
       setAbi(_abi);
       //console.log("set abi:", _abi);
     })();
@@ -34,15 +36,14 @@ const UploadNFT = () => {
     });
   }, []);
 
-  //const abi = async () => await getAbi();
-
   const mint = async () => {
     console.log("imageFile:", imageFile);
     console.log("animationFile:", animationFile);
 
     // IPFSにアップロード
-    const client = new Web3Storage({ token: getAccessToken() });
+    const client = new Web3Storage({ token: WEB3STORAGE_TOKEN });
     const uploadIPFS = async (file) => {
+      console.log('uploadIPFS:',file)
       const rootCid = await client.put([file], {
         name: file.name,
         maxRetries: 3,
@@ -60,7 +61,7 @@ const UploadNFT = () => {
     console.log("nftName:", nftName);
     console.log("description:", description);
 
-    //await mintNFT(imageFileCID, animationFileCID, nftName, description);
+    await mintNFT(imageFileCID, animationFileCID, nftName, description);
   };
 
   const mintNFT = async (_imageCID, _animationCID, _name, _description) => {
@@ -69,6 +70,7 @@ const UploadNFT = () => {
     try {
       const provider = new ethers.providers.Web3Provider(ethereum);
       const signer = provider.getSigner();
+      console.log("abi:",abi)
       const nftContract = new ethers.Contract(CONTRACT_ADDRESS, abi, signer);
 
       window.contract = nftContract;
@@ -91,8 +93,9 @@ const UploadNFT = () => {
 
   return (
     <>
-      <div className="flex flex-col p-2 place-content-center">
-        <label>Thumbnail picture</label>
+      <div className="flex flex-col p-2">
+        <h2 className="text-2xl font-semibold m-2">Upload NFT</h2>
+        <label className="mt-2 mx-2">Thumbnail picture</label>
         <InputFile
           name="image"
           accept=".jpg , .jpeg , .png"
@@ -101,7 +104,7 @@ const UploadNFT = () => {
             setImageFile(file);
           }}
         />
-        <label>3D data</label>
+        <label className="mt-2 mx-2">3D data</label>
         <InputFile
           name="animation"
           accept=".glb"
@@ -110,18 +113,18 @@ const UploadNFT = () => {
             setAnimationFile(file);
           }}
         />
-        <labe>Name</labe>
+        <labe className="mx-2 mt-2">Name</labe>
         <input
           type="text"
           name="name"
-          className="border-2 rounded-lg"
-          onChange={setNftName}
+          className="border-2 rounded-lg p-2"
+          onChange={(e)=>{setNftName(e.target.value)}}
         />
-        <labe>Description</labe>
+        <label className="mx-2 mt-2">Description</label>
         <textarea
           name="description"
-          className="border-2 rounded-lg"
-          onChange={setDescription}
+          className="border-2 rounded-lg p-2"
+          onChange={(e)=>{setDescription(e.target.value)}}
         />
         <div className="my-2 flex flex-col">
           <Button onClick={async () => await mint()}>Upload</Button>
@@ -131,55 +134,3 @@ const UploadNFT = () => {
   );
 };
 export default UploadNFT;
-
-function getAccessToken() {
-  // If you're just testing, you can paste in a token
-  // and uncomment the following line:
-  // return 'paste-your-token-here'
-
-  // In a real app, it's better to read an access token from an
-  // environement variable or other configuration that's kept outside of
-  // your code base. For this to work, you need to set the
-  // WEB3STORAGE_TOKEN environment variable before you run your code.
-  //return process.env.WEB3STORAGE_TOKEN
-  return process.env.NEXT_PUBLIC_API_KEY;
-}
-
-function makeStorageClient() {
-  return new Web3Storage({ token: getAccessToken() });
-}
-
-async function retrieve(cid) {
-  console.log("making StorageClient...");
-  const client = makeStorageClient();
-  try {
-    console.log("getting response...");
-    const res = await client.get(cid);
-    console.log(`Got a response! [${res.status}] ${res.statusText}`);
-    if (!res.ok) {
-      throw new Error(`failed to get ${cid}`);
-    }
-    console.log("res:", res);
-    const files = await res.files();
-    console.log("files:", files.length);
-    for (const f of files) {
-      console.log("file:", f);
-    }
-  } catch (e) {
-    console.log("retrieve error:", e);
-  }
-}
-
-const getAbi = async () => {
-  try {
-    const res = await axios.get(
-      "https://api-testnet.polygonscan.com/api?module=contract&action=getabi&address=0x7b261ee52C98d2D68Cb832ae3D8E59867255f6Eb"
-    );
-    const data = res.data;
-    //console.log("data", data);
-    //console.log("abi:", JSON.parse(data.result));
-    return data.result;
-  } catch (error) {
-    console.log("axios error:", error);
-  }
-};

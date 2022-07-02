@@ -4,7 +4,7 @@ import { Button } from "../../components/atoms/button";
 
 export const Header = () => {
   return (
-    <header className="flex flex-col items-center">
+    <header className="flex flex-col items-center my-3">
       <Image src="/logo.png" alt="Ryuzetsu" width={239} height={69} className="m-2"/>
       <Button onClick={connectWallet}>
         <span>Connect Wallet</span>

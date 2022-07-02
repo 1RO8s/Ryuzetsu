@@ -9,8 +9,8 @@ const CONTRACT_ADDRESS = "0x7b261ee52c98d2d68cb832ae3d8e59867255f6eb";
 export const Card = ({
   name = "Ryuzetsu NFT #0001",
   owner = "Pawel Czerwinski",
-  imageURL = "",
-  animationURL = ""
+  imageCID = "bafybeia7sjg3qocu4y6mpurn6d63dryssjukttznnc2xbulztrsrxk37fy",
+  animationCID = ""
 }) => {
   const [abi, setAbi] = React.useState([]);
   // コントラクトを叩いて、imageとanimationのURLを取得する
@@ -24,7 +24,7 @@ export const Card = ({
 
       console.log("nftContract:", nftContract);
       window.contract = nftContract;
-      if (nftContract.getRecord === undefined) throw "errr!!!!!";
+      if (nftContract.getRecord === undefined) return;
       const records = await nftContract.getRecord(tokenId);
       const latestRecord = records[0];
       console.log("latestRecord:", latestRecord);
@@ -53,18 +53,18 @@ export const Card = ({
   }, []);
 
   return (
-    <div className="flex flex-col p-2 rounded-3xl border-2">
-      <Image
+    <div className="flex flex-col p-3 rounded-3xl border-2 pb-3">
+      <img
         src={
-          "https://cloudflare-ipfs.com/ipfs/bafybeia7sjg3qocu4y6mpurn6d63dryssjukttznnc2xbulztrsrxk37fy"
+          `https://cloudflare-ipfs.com/ipfs/${imageCID}`
         }
         alt="Ryuzetsu"
         width={320}
         height={399}
         className="rounded-xl"
       />
-      <span className="text-2xl font-bold">{name}</span>
-      <div className="grow-0">
+      <span className="text-2xl font-bold m-2">{name}</span>
+      <div className="flex flex-row grow-0 my-auto">
         <Image
           src="/sample-profile.png"
           alt="Owner profile"
@@ -72,9 +72,11 @@ export const Card = ({
           height={60}
           className="rounded-full"
         />
-        {name}
+        <div className="flex flex-col justify-center">
+        <span className="mx-2">Owned by </span>
+        <span className="mx-2">{owner}</span>
+        </div>
       </div>
-      <Button onClick={() => getURLs(7)}>sample</Button>
     </div>
   );
 };
