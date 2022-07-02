@@ -1,22 +1,21 @@
-import Image from "next/image";
-import { Header } from "../../components/layout/header";
 import { Web3Storage } from "web3.storage";
 import { ethers } from "ethers";
 import axios from "axios";
 import React from "react";
+import { Button } from "../../components/atoms/button";
+
+import { FileDrag } from "../../components/organisms/fileDrag";
+import { InputFile } from "../../components/atoms/inputFile";
 
 const CONTRACT_ADDRESS = "0x7b261ee52c98d2d68cb832ae3d8e59867255f6eb";
-
-
 
 const UploadNFT = () => {
   const [abi, setAbi] = React.useState([]);
 
   const [imageFile, setImageFile] = React.useState();
   const [animationFile, setAnimationFile] = React.useState();
-  const [nftName, setNftName]  = React.useState();
-  const [description, setDescription]= React.useState();
-
+  const [nftName, setNftName] = React.useState();
+  const [description, setDescription] = React.useState();
 
   React.useEffect(() => {
     //if (!isDetectedWallet()) return
@@ -37,7 +36,6 @@ const UploadNFT = () => {
 
   //const abi = async () => await getAbi();
 
-  
   const mint = async () => {
     console.log("imageFile:", imageFile);
     console.log("animationFile:", animationFile);
@@ -52,29 +50,28 @@ const UploadNFT = () => {
       const res = await client.get(rootCid);
       const files = await res.files();
       console.log("files[0]:", files[0]);
-      return files[0].cid
-    }
-    const imageFileCID = await uploadIPFS(imageFile)
-    const animationFileCID = await uploadIPFS(animationFile)
-    console.log("imageFileCID:",imageFileCID)
-    console.log("animationFileCID:",animationFileCID)
+      return files[0].cid;
+    };
+    const imageFileCID = await uploadIPFS(imageFile);
+    const animationFileCID = await uploadIPFS(animationFile);
 
-    await mintNFT(
-      imageFileCID,
-      animationFileCID,
-      nftName,
-      description
-    )
+    console.log("imageFileCID:", imageFileCID);
+    console.log("animationFileCID:", animationFileCID);
+    console.log("nftName:", nftName);
+    console.log("description:", description);
+
+    //await mintNFT(imageFileCID, animationFileCID, nftName, description);
   };
 
-  const mintNFT = async (_imageCID,_animationCID,_name,_description) => {
+  const mintNFT = async (_imageCID, _animationCID, _name, _description) => {
     console.log("preparing mint...");
     ethereum = window.ethereum;
     try {
       const provider = new ethers.providers.Web3Provider(ethereum);
       const signer = provider.getSigner();
       const nftContract = new ethers.Contract(CONTRACT_ADDRESS, abi, signer);
- 
+
+      window.contract = nftContract;
       const nftTx = await nftContract.makeAgaveNFT(
         `ipfs://${_imageCID}`,
         `ipfs://${_animationCID}`,
@@ -94,38 +91,42 @@ const UploadNFT = () => {
 
   return (
     <>
-      <div className="p-2">
-        <input
+      <div className="flex flex-col p-2 place-content-center">
+        <label>Thumbnail picture</label>
+        <InputFile
           name="image"
-          type="file"
           accept=".jpg , .jpeg , .png"
           onChange={(e) => {
             const file = e.target.files[0];
             setImageFile(file);
           }}
         />
-        <input
+        <label>3D data</label>
+        <InputFile
           name="animation"
-          type="file"
           accept=".glb"
           onChange={(e) => {
             const file = e.target.files[0];
             setAnimationFile(file);
           }}
         />
-        <input type="text" name="name" className="border-2" onChange={setNftName}/>
-        <textarea name="description" className="border-2" onChange={setDescription}/>
+        <labe>Name</labe>
+        <input
+          type="text"
+          name="name"
+          className="border-2 rounded-lg"
+          onChange={setNftName}
+        />
+        <labe>Description</labe>
+        <textarea
+          name="description"
+          className="border-2 rounded-lg"
+          onChange={setDescription}
+        />
+        <div className="my-2 flex flex-col">
+          <Button onClick={async () => await mint()}>Upload</Button>
+        </div>
       </div>
-      <button
-        className={
-          "rounded py-2 px-4 font-bold" +
-          " " +
-          "bg-blue-500 text-white hover:bg-blue-400"
-        }
-        onClick={async () => await mint()}
-      >
-        Upload
-      </button>
     </>
   );
 };

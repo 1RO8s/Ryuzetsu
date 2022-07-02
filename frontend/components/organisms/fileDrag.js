@@ -1,43 +1,43 @@
-import Image from "next/image";
+import React from "react";
+import { useDropzone } from "react-dropzone";
 
-export const Card = ({name="Ryuzetsu NFT #0001", owner="Pawel Czerwinski"}) => {
+export const FileDrag = () => {
+  const onDrop = React.useCallback((acceptedFiles) => {
+    // Do something with the files
+    console.log("acceptedFiles:", acceptedFiles);
+  }, []);
 
-  const provider = new ethers.providers.Web3Provider(ethereum);
+  const { getRootProps, getInputProps, isDragActive, open, acceptedFiles } =
+    useDropzone({ onDrop, noClick: true });
 
-  // 
-  const getURLs = async (tokenId) => {
-    console.log("preparing mint...");
-    ethereum = window.ethereum;
-    try {
-      const provider = new ethers.providers.Web3Provider(ethereum);
-      const signer = provider.getSigner();
-      const nftContract = new ethers.Contract(CONTRACT_ADDRESS, abi, signer);
- 
-      const nftTx = await nftContract.getRecord(tokenId);
+  const files = React.useMemo(// file更新時の処理
+    () =>{
+      acceptedFiles.map((file) => (
+        <li key={file.path}>
+          {file.path} - {file.size} bytes
+        </li>
+      )),
+    [acceptedFiles]
+  }
+  );
 
-      // const tx = await nftTx.wait();
-      // console.log("minted: ", tx);
-      // const event = tx.events[0];
-      // const value = event.args[2];
-      // const tokenId = value.toNumber();
-    } catch (error) {
-      console.error("Error minting:", error);
-    }
-  };
-
-  //const client = new Web3Storage({ token: getAccessToken() });
-
-
+  console.log('acceptedFiles:',acceptedFiles)
 
   return (
-    <div className="flex flex-col p-2 rounded-2xl border-2">
-      <Image src="/sample-agabe.jpg" alt="Ryuzetsu" width={320} height={399} className="rounded-xl"/>
-      <span className="text-2xl font-bold">{name}</span>
-      <div className="grow-0">
-      <Image src="/sample-profile.png" alt="Owner profile" width={60} height={60} className='rounded-full'/>
-      {name}
-      </div>
-      
+    <div
+      {...getRootProps()}
+      //className="w-80 h-40 bg-gray-100 rounded-2xl p-2"
+      className="h-40 bg-gray-100 rounded-2xl p-2"
+    >
+      <input {...getInputProps()} />
+      <p>
+        {isDragActive
+          ? "Drop the files here ..."
+          : "Drag and drop or browse a file"}
+      </p>
+      <button type="button" onClick={open}>
+        Select files
+      </button>
     </div>
   );
 };

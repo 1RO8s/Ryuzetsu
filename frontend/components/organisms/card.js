@@ -1,19 +1,38 @@
 import Image from "next/image";
+import React from "react";
+import { ethers } from "ethers";
+import axios from "axios";
+import { Button } from "../../components/atoms/button";
 
-export const Card = ({name="Ryuzetsu NFT #0001", owner="Pawel Czerwinski"}) => {
+const CONTRACT_ADDRESS = "0x7b261ee52c98d2d68cb832ae3d8e59867255f6eb";
 
-  const provider = new ethers.providers.Web3Provider(ethereum);
-
-  // 
+export const Card = ({
+  name = "Ryuzetsu NFT #0001",
+  owner = "Pawel Czerwinski",
+  imageURL = "",
+  animationURL = ""
+}) => {
+  const [abi, setAbi] = React.useState([]);
+  // コントラクトを叩いて、imageとanimationのURLを取得する
   const getURLs = async (tokenId) => {
-    console.log("preparing mint...");
+    console.log("get ipfs urls...");
     ethereum = window.ethereum;
     try {
       const provider = new ethers.providers.Web3Provider(ethereum);
       const signer = provider.getSigner();
       const nftContract = new ethers.Contract(CONTRACT_ADDRESS, abi, signer);
- 
-      const nftTx = await nftContract.getRecord(tokenId);
+
+      console.log("nftContract:", nftContract);
+      window.contract = nftContract;
+      if (nftContract.getRecord === undefined) throw "errr!!!!!";
+      const records = await nftContract.getRecord(tokenId);
+      const latestRecord = records[0];
+      console.log("latestRecord:", latestRecord);
+
+      const imgIPFS = latestRecord[0];
+      const animationIPFS = latestRecord[1];
+      const imgCID = imgIPFS.slice("ipfs://".length);
+      const animationCID = animationIPFS.slice("ipfs://".length);
 
       // const tx = await nftTx.wait();
       // console.log("minted: ", tx);
@@ -25,19 +44,37 @@ export const Card = ({name="Ryuzetsu NFT #0001", owner="Pawel Czerwinski"}) => {
     }
   };
 
-  //const client = new Web3Storage({ token: getAccessToken() });
-
-
+  React.useEffect(() => {
+    (async () => {
+      const _abi = await getAbi();
+      setAbi(_abi);
+      await getURLs(7);
+    })();
+  }, []);
 
   return (
-    <div className="flex flex-col p-2 rounded-2xl border-2">
-      <Image src="/sample-agabe.jpg" alt="Ryuzetsu" width={320} height={399} className="rounded-xl"/>
+    <div className="flex flex-col p-2 rounded-3xl border-2">
+      <Image
+        src={
+          "https://cloudflare-ipfs.com/ipfs/bafybeia7sjg3qocu4y6mpurn6d63dryssjukttznnc2xbulztrsrxk37fy"
+        }
+        alt="Ryuzetsu"
+        width={320}
+        height={399}
+        className="rounded-xl"
+      />
       <span className="text-2xl font-bold">{name}</span>
       <div className="grow-0">
-      <Image src="/sample-profile.png" alt="Owner profile" width={60} height={60} className='rounded-full'/>
-      {name}
+        <Image
+          src="/sample-profile.png"
+          alt="Owner profile"
+          width={60}
+          height={60}
+          className="rounded-full"
+        />
+        {name}
       </div>
-      
+      <Button onClick={() => getURLs(7)}>sample</Button>
     </div>
   );
 };
@@ -54,3 +91,17 @@ function getAccessToken() {
   //return process.env.WEB3STORAGE_TOKEN
   return process.env.NEXT_PUBLIC_API_KEY;
 }
+
+const getAbi = async () => {
+  try {
+    const res = await axios.get(
+      "https://api-testnet.polygonscan.com/api?module=contract&action=getabi&address=0x7b261ee52C98d2D68Cb832ae3D8E59867255f6Eb"
+    );
+    const data = res.data;
+    //console.log("data", data);
+    //console.log("abi:", JSON.parse(data.result));
+    return data.result;
+  } catch (error) {
+    console.log("axios error:", error);
+  }
+};

@@ -82,17 +82,12 @@ const UploadNFT = () => {
 
   return (
     <>
-      <div className="p-2">
-        <input name="image" type="file" accept=".jpg , .jpeg , .png" />
-        <input name="animation" type="file" accept=".glb" />
-        <input type="text" name="name" className="border-2" />
-        <textarea name="description" className="border-2" />
-      </div>
+    <div className="flex flex-col">
       <button
         className={
           "rounded py-2 px-4 font-bold" +
           " " +
-          "bg-blue-500 text-white hover:bg-blue-400"
+          "bg-blue-500 text-white hover:bg-blue-400 m-2"
         }
         onClick={async () =>
           await retrieve(
@@ -111,7 +106,7 @@ const UploadNFT = () => {
         className={
           "rounded py-2 px-4 font-bold" +
           " " +
-          "bg-blue-500 text-white hover:bg-blue-400"
+          "bg-blue-500 text-white hover:bg-blue-400 m-2"
         }
         onClick={async () => await mintNFT()}
       >
@@ -121,12 +116,13 @@ const UploadNFT = () => {
         className={
           "rounded py-2 px-4 font-bold" +
           " " +
-          "bg-blue-500 text-white hover:bg-blue-400"
+          "bg-blue-500 text-white hover:bg-blue-400 m-2"
         }
         onClick={async () => await getAbi()}
       >
         GET ABI
       </button>
+      </div>
     </>
   );
 };
@@ -151,7 +147,7 @@ function makeStorageClient() {
 
 async function retrieve(cid) {
   console.log("making StorageClient...");
-  const client = makeStorageClient();
+  const client = makeStorageClient(); // web3Clientの作成
   try {
     console.log("getting response...");
     const res = await client.get(cid);
