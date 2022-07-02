@@ -3,6 +3,7 @@ import Image from "next/image";
 import { ethers } from "ethers";
 import { Card } from "../../components/organisms/card";
 import { CONTRACT_ADDRESS, ABI } from "../../utils/utils";
+import { LinkBar} from "../../components/atoms/linkBar"
 
 const MyNFTs = ({ _tokenId }) => {
   const [tokenURIs, setTokenURIs] = React.useState([]);
@@ -119,11 +120,15 @@ const MyNFTs = ({ _tokenId }) => {
         <h2 className="text-xl font-medium my-2">Your Digital Agave</h2>
         {tokenURIs.map(
           (meta, i) => (
-            <div key={i} className="my-2">
+            <div key={i} className="my-2 flex flex-col">
               <Card
                 name={meta.name}
                 imageCID={meta.image.slice("ipfs://".length)}
               />
+              <LinkBar
+              href="https://oncyber.io/spaces/YtpGpa1ZLwVQUmO2fi3y"
+              target="_blank"
+              >OnCyber</LinkBar>
             </div>
           )
           // name={meta.name}
