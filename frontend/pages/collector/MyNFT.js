@@ -118,8 +118,8 @@ const MyNFTs = ({ _tokenId }) => {
       <div className="flex flex-col items-center p-2">
         <h2 className="text-xl font-medium my-2">Your Digital Agave</h2>
         {tokenURIs.map(
-          (meta) => (
-            <div className="my-2">
+          (meta, i) => (
+            <div key={i} className="my-2">
             <Card 
             name={meta.name} 
             imageCID={meta.image.slice('ipfs://'.length)}
