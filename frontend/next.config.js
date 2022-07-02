@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['cloudflare-ipfs.com','placeimg.com'],
+    domains: ['cloudflare-ipfs.com','placeimg.com','ryuzetsu.vercel.app'],
   },
 }
 module.exports = nextConfig
