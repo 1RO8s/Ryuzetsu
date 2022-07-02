@@ -120,10 +120,10 @@ const MyNFTs = ({ _tokenId }) => {
         {tokenURIs.map(
           (meta, i) => (
             <div key={i} className="my-2">
-            <Card 
-            name={meta.name} 
-            imageCID={meta.image.slice('ipfs://'.length)}
-            />
+              <Card
+                name={meta.name}
+                imageCID={meta.image.slice("ipfs://".length)}
+              />
             </div>
           )
           // name={meta.name}
