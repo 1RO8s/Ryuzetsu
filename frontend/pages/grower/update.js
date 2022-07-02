@@ -65,7 +65,7 @@ const UploadNFT = () => {
     console.log("nftName:", nftName);
     console.log("description:", description);
 
-    //await mintNFT(imageFileCID, animationFileCID, nftName, description);
+    await mintNFT(imageFileCID, animationFileCID, nftName, description);
     setIsLoading(false)
   };
 
