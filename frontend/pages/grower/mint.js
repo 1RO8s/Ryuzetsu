@@ -7,12 +7,14 @@ import { WEB3STORAGE_TOKEN, getABI} from "../../utils/utils"
 
 import { FileDrag } from "../../components/organisms/fileDrag";
 import { InputFile } from "../../components/atoms/inputFile";
+import Loading from "../../components/atoms/loading"
 
 const CONTRACT_ADDRESS = "0x7b261ee52c98d2d68cb832ae3d8e59867255f6eb";
 
 const UploadNFT = () => {
 
   const [abi, setAbi] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(false)
 
   const [imageFile, setImageFile] = React.useState();
   const [animationFile, setAnimationFile] = React.useState();
@@ -37,6 +39,7 @@ const UploadNFT = () => {
   }, []);
 
   const mint = async () => {
+    setIsLoading(true)
     console.log("imageFile:", imageFile);
     console.log("animationFile:", animationFile);
 
@@ -62,6 +65,7 @@ const UploadNFT = () => {
     console.log("description:", description);
 
     await mintNFT(imageFileCID, animationFileCID, nftName, description);
+    setIsLoading(false)
   };
 
   const mintNFT = async (_imageCID, _animationCID, _name, _description) => {
@@ -88,6 +92,7 @@ const UploadNFT = () => {
       const tokenId = value.toNumber();
     } catch (error) {
       console.error("Error minting:", error);
+      setIsLoading(false)
     }
   };
 
@@ -130,6 +135,7 @@ const UploadNFT = () => {
           <Button onClick={async () => await mint()}>Upload</Button>
         </div>
       </div>
+      <Loading isLoading={isLoading} />
     </>
   );
 };
