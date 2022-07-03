@@ -3,8 +3,7 @@ import React from "react";
 import { ethers } from "ethers";
 import axios from "axios";
 import { Button } from "../../components/atoms/button";
-
-const CONTRACT_ADDRESS = "0x7b261ee52c98d2d68cb832ae3d8e59867255f6eb";
+import {CONTRACT_ADDRESS, getABI} from "../../utils/utils"
 
 export const Card = ({
   name = "Ryuzetsu NFT #0001",
@@ -46,7 +45,7 @@ export const Card = ({
 
   React.useEffect(() => {
     (async () => {
-      const _abi = await getAbi();
+      const _abi = await getABI();
       setAbi(_abi);
       await getURLs(7);
     })();
@@ -94,16 +93,3 @@ function getAccessToken() {
   return process.env.NEXT_PUBLIC_API_KEY;
 }
 
-const getAbi = async () => {
-  try {
-    const res = await axios.get(
-      "https://api-testnet.polygonscan.com/api?module=contract&action=getabi&address=0x7b261ee52C98d2D68Cb832ae3D8E59867255f6Eb"
-    );
-    const data = res.data;
-    //console.log("data", data);
-    //console.log("abi:", JSON.parse(data.result));
-    return data.result;
-  } catch (error) {
-    console.log("axios error:", error);
-  }
-};

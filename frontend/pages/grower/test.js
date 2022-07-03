@@ -4,9 +4,7 @@ import { Web3Storage } from "web3.storage";
 import { ethers } from "ethers";
 import axios from "axios";
 import React from "react";
-
-const CONTRACT_ADDRESS = "0x7b261ee52c98d2d68cb832ae3d8e59867255f6eb";
-//const abi = getAbi();
+import {CONTRACT_ADDRESS , getABI} from "../../utils/utils"
 
 const CIDs = {
   sampleAgave: "bafybeia7sjg3qocu4y6mpurn6d63dryssjukttznnc2xbulztrsrxk37fy", // sample-agabe
@@ -31,7 +29,7 @@ const UploadNFT = () => {
     (async () => {
       // リロード時にアカウント取得（接続済のみ）
       const acts = await ethereum.request({ method: "eth_accounts" });
-      const _abi = await getAbi();
+      const _abi = await getABI();
       setAbi(_abi);
       console.log("set abi:", _abi);
     })();
@@ -41,8 +39,6 @@ const UploadNFT = () => {
       //setAccount(_accounts)
     });
   }, []);
-
-  //const abi = async () => await getAbi();
 
   const mintNFT = async () => {
     console.log("preparing mint...");
@@ -118,7 +114,7 @@ const UploadNFT = () => {
           " " +
           "bg-blue-500 text-white hover:bg-blue-400 m-2"
         }
-        onClick={async () => await getAbi()}
+        onClick={async () => await getABI()}
       >
         GET ABI
       </button>
@@ -165,17 +161,3 @@ async function retrieve(cid) {
     console.log("retrieve error:", e);
   }
 }
-
-const getAbi = async () => {
-  try {
-    const res = await axios.get(
-      "https://api-testnet.polygonscan.com/api?module=contract&action=getabi&address=0x7b261ee52C98d2D68Cb832ae3D8E59867255f6Eb"
-    );
-    const data = res.data;
-    console.log("data", data);
-    console.log("abi:", JSON.parse(data.result));
-    return data.result;
-  } catch (error) {
-    console.log("axios error:", error);
-  }
-};

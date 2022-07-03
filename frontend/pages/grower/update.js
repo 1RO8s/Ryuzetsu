@@ -3,13 +3,11 @@ import { ethers } from "ethers";
 import axios from "axios";
 import React from "react";
 import { Button } from "../../components/atoms/button";
-import { WEB3STORAGE_TOKEN, getABI} from "../../utils/utils"
+import { WEB3STORAGE_TOKEN, getABI, CONTRACT_ADDRESS} from "../../utils/utils"
 
 import { FileDrag } from "../../components/organisms/fileDrag";
 import { InputFile } from "../../components/atoms/inputFile";
 import Loading from "../../components/atoms/loading"
-
-const CONTRACT_ADDRESS = "0x7b261ee52c98d2d68cb832ae3d8e59867255f6eb";
 
 const UploadNFT = () => {
 
