@@ -1,9 +1,10 @@
 import React from "react";
+import Link from "next/link";
 import Image from "next/image";
 import { ethers } from "ethers";
 import { Card } from "../../components/organisms/card";
 import { CONTRACT_ADDRESS, ABI } from "../../utils/utils";
-import { LinkBar} from "../../components/atoms/linkBar"
+import { LinkBar } from "../../components/atoms/linkBar";
 
 const MyNFTs = ({ _tokenId }) => {
   const [tokenURIs, setTokenURIs] = React.useState([]);
@@ -33,8 +34,9 @@ const MyNFTs = ({ _tokenId }) => {
           "base64"
         )
       );
-      console.log("tokenURI:", tokenURI);
-      return tokenURI;
+      const tokenURIwithId = { ...tokenURI, tokenId };
+      console.log("tokenURIwith:", tokenURIwithId);
+      return tokenURIwithId;
     } catch (error) {
       console.error("Error minting:", error);
     }
@@ -42,7 +44,7 @@ const MyNFTs = ({ _tokenId }) => {
 
   /**
    * 自分が所有しているTokenのIdを取得
-   * @return {string[]}
+   * @return {string[]}　tokenIds
    */
   const getTokenIds = async () => {
     let tokenIds = [];
@@ -96,6 +98,7 @@ const MyNFTs = ({ _tokenId }) => {
   };
 
   React.useEffect(() => {
+    console.log("#contract address:",CONTRACT_ADDRESS)
     ethereum = window.ethereum;
     (async () => {
       const acts = await ethereum.request({ method: "eth_accounts" });
@@ -118,17 +121,23 @@ const MyNFTs = ({ _tokenId }) => {
     <>
       <div className="flex flex-col items-center p-2">
         <h2 className="text-xl font-medium my-2">Your Digital Agave</h2>
-        {tokenURIs.map(
-          (meta, i) => (
-            <div key={i} className="my-2 flex flex-col">
-              <Card
-                name={meta.name}
-                imageCID={meta.image.slice("ipfs://".length)}
-              />
+        
+        {tokenURIs.length > 0? tokenURIs.map(
+          (meta) => (
+            <div key={meta.tokenId} className="my-2 flex flex-col">
+              {`tokenId:${meta.tokenId}`}
+              <Link href="/collector/nftDetail">
+                <Card
+                  name={meta.name}
+                  imageCID={meta.image.slice("ipfs://".length)}
+                />
+              </Link>
               <LinkBar
-              href="https://oncyber.io/spaces/YtpGpa1ZLwVQUmO2fi3y"
-              target="_blank"
-              >OnCyber</LinkBar>
+                href="https://oncyber.io/spaces/YtpGpa1ZLwVQUmO2fi3y"
+                target="_blank"
+              >
+                OnCyber
+              </LinkBar>
             </div>
           )
           // name={meta.name}
@@ -136,24 +145,9 @@ const MyNFTs = ({ _tokenId }) => {
           // //imageURL=""
           // //animationURL=""
           // />
-        )}
+        ):<p>loading</p>}
       </div>
     </>
   );
-
-  <Image
-    src={
-      "https://cloudflare-ipfs.com/ipfs/bafybeia7sjg3qocu4y6mpurn6d63dryssjukttznnc2xbulztrsrxk37fy"
-    }
-    //src={'https://placeimg.com/140/140/any'}
-    height={50}
-    width={50}
-  />;
 };
 export default MyNFTs;
-
-export const getServerSideProps = async () => {
-  return {
-    props: { _tokenId: 1 },
-  };
-};
