@@ -9,7 +9,7 @@ function MyApp({ Component, pageProps }) {
       <meta name="description" content="Ryuzetsu" />
       <link rel="icon" href="/favicon.ico" />
     </Head>
-    <div className='border-2 max-w-lg mx-auto'>
+    <div className='max-w-lg mx-auto'>
     <Header/>
     <Component {...pageProps} />
     </div>
