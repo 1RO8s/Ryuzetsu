@@ -7,6 +7,7 @@ import {CONTRACT_ADDRESS, getABI} from "../../utils/utils"
 
 export const Card = ({
   name = "Ryuzetsu NFT #0001",
+  description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
   owner = "Pawel Czerwinski",
   imageCID = "bafybeia7sjg3qocu4y6mpurn6d63dryssjukttznnc2xbulztrsrxk37fy",
   animationCID = ""
@@ -52,7 +53,8 @@ export const Card = ({
   }, []);
 
   return (
-    <div className="flex flex-col p-3 rounded-3xl border-2 pb-3">
+    <div className="flex flex-col p-3 rounded-3xl border-2 pb-3"
+    href="/collector/nftDetail">
       <img
         src={
           `https://cloudflare-ipfs.com/ipfs/${imageCID}`
@@ -63,6 +65,7 @@ export const Card = ({
         className="rounded-xl"
       />
       <span className="text-2xl font-bold m-2">{name}</span>
+      <div className="m-2 break-all max-w-fit">{description}</div>
       <div className="flex flex-row grow-0 my-auto">
         <Image
           src="/sample-profile.png"
